@@ -1,85 +1,47 @@
 import streamlit as st
-import sqlite3
-import numpy as np
+import streamlit.components.v1 as components
 import pandas as pd
-from catboost import CatBoostRegressor
-from data_prep import DataPrep
 
-# data
-df_ext = pd.read_csv('data/df_ext.csv', index_col=0)
-df_ext = df_ext[df_ext['track_name'] != '']
+st.title('Spotify Track Popularity Project')
 
-# catboost
-data_prep = DataPrep()
-_, _, X_upd, y_upd = data_prep.fit_transform(df_ext)
-cat = CatBoostRegressor(verbose=False).fit(X_upd, y_upd)
-y_pred = cat.predict(X_upd)
-y_pred = np.round(np.clip(y_pred, 0, 100))
+st.write("*The idea of the project is that it might be possible \
+    to predict the popularity of the track before its release \
+        simply based on its metadata and audio features.*")
 
-# SQLite database
-conn = sqlite3.connect('data/game_results.db')
-c = conn.cursor()
+st.write('I started off with a dataframe from **Kaggle**:')
 
-c.execute('''
-          CREATE TABLE IF NOT EXISTS game_results
-          (row_id INT,
-          user_prediction INT,
-          predicted_popularity INT,
-          actual_popularity INT)
-          ''')
+df = pd.read_csv('-spotify-tracks-dataset/dataset.csv', index_col=0)
+st.dataframe(df)
 
-# update score board
-def save_game_result(row_id, user_prediction, predicted_popularity, actual_popularity):
-    global score_str
-    c.execute('''
-              INSERT INTO game_results 
-              (row_id, user_prediction, predicted_popularity, actual_popularity) 
-              VALUES (?, ?, ?, ?)
-              ''', (row_id, user_prediction, predicted_popularity, actual_popularity))
-    conn.commit()
-    c.execute('''
-              SELECT sum(
-                  0.5*(ABS(user_prediction - actual_popularity) < ABS(predicted_popularity - actual_popularity)) + 
-                  0.5*(ABS(user_prediction - actual_popularity) <= ABS(predicted_popularity - actual_popularity))
-                  ) 
-              FROM game_results''')
-    score = c.fetchone()[0]
-    c.execute('''
-              SELECT count(*) 
-              FROM game_results''')
-    max_score = c.fetchone()[0]
-    score_str = f"{score}/{max_score}"
-    conn.commit()
+st.write('Then I added some data via **Spotify API**:')
+
+df_ext = pd.read_csv('streamlit/data/df_ext.csv', index_col=0)
+st.dataframe(df_ext)
+
+st.write("Then I selected the updated_pop column as the **target** - \
+    the variable we'd like to be able to predict. \
+        I had to also do some encoding on the categorical data in the table. \
+            After that was done, we had an updated version of the dataset:")
+
+X_upd = pd.read_csv('streamlit/data/X_upd.csv', index_col=0)
+st.dataframe(X_upd)
+
+st.write('I decided to look at where Spotify operates \
+    (greeen countries are where you can use Spotify):')
+
+with open('streamlit/data/markets.html') as f:
+    map = f.read()
     
-col1, col2, col3 = st.columns(3)
-    
-with col2:
-    st.title('Guess the Track Popularity (Game)')
+components.html(map, height=600)
 
-# add option to reset the score
-with col1:
-    if st.button('Reset Score'):
-        c.execute('DELETE FROM game_results')
+st.write("Then I calculated and visualized the dataset's columns correlations:")
 
-# displaying the score     
-score_str = None
+st.image('streamlit/data/correlations.png')
 
+st.write("Overall, I've done 4 different feature importance tests, \
+    after which I found the score for all of them \
+        and rated them based on it: ")
 
-selected_row = None
+st.image('streamlit/data/scores.png')
 
-def generate_row():
-    global selected_row
-    selected_row = df_ext.sample(1)
-    
-if selected_row is None:
-    generate_row()
-    
-track_name = selected_row['track_name'].values[0]
-artists = selected_row['artists'].values[0]
-artists = ', '.join(artists.split(';'))
-
-with col2:
-    st.write(f'**Track Name:** {track_name}.')
-    st.write(f'**Artists:** {artists}.')
-
-save_game_result(0,0,0,0)
+st.write('For more details, see main.ipynb.')

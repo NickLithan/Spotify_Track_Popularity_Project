@@ -1,5 +1,7 @@
 # Spotify Track Popularity Project
 
+For a quick overview, visit https://spotify0track0popularity0project.streamlit.app/.
+
 ## Description
 
 The aim of this project is to 
@@ -19,10 +21,9 @@ In the process of creating the project,
 4. **NumPy** was used throughout for various calculations;
 5. **Folium** was used to visualise the geodata (countries where Spotify operates);
 6. **Matplotlip** and **Seaborn** were used for non-trivial data visualisation;
-7. **SQL** for scoring in the popularity prediction game;
-8. **Streamlit** for hosting the popularity prediction game;
-9. **Sklearn** and **Catboost** were used for machine learning (linear regression and gradient boosting);
-10. Additional technology: 
+7. **Streamlit** for showing the key moments in the project;
+8. **Sklearn** and **Catboost** were used for machine learning (linear regression and gradient boosting);
+9. Additional technology: 
 - **opendatasets** to retrieve a dataset from Kaggle, 
 - **typing** for documentation, 
 - **tqdm** for progress bars,
@@ -32,6 +33,6 @@ In the process of creating the project,
 
 ## Usage
 
-To explore the data analysis part of the project, read main.ipynb.
+To explore the key parts of the project, go to https://spotify0track0popularity0project.streamlit.app/.
 
-To try playing against my algotithm, go to
+For more details, see main.ipynb.
