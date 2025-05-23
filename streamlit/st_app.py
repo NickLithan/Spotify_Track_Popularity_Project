@@ -11,12 +11,12 @@ st.write("*The idea of the project is that it might be possible \
 st.write('I started off with a dataframe from **Kaggle**:')
 
 df = pd.read_csv('-spotify-tracks-dataset/dataset.csv', index_col=0)
-st.dataframe(df)
+st.dataframe(df.head(10))
 
 st.write('Then I added some data via **Spotify API**:')
 
 df_ext = pd.read_csv('streamlit/data/df_ext.csv', index_col=0)
-st.dataframe(df_ext)
+st.dataframe(df_ext.head(10))
 
 st.write("Then I selected the updated_pop column as the **target** - \
     the variable we'd like to be able to predict. \
@@ -24,7 +24,7 @@ st.write("Then I selected the updated_pop column as the **target** - \
             After that was done, we had an updated version of the dataset:")
 
 X_upd = pd.read_csv('streamlit/data/X_upd.csv', index_col=0)
-st.dataframe(X_upd)
+st.dataframe(X_upd.head(10))
 
 st.write('I decided to look at where Spotify operates \
     (greeen countries are where you can use Spotify):')
